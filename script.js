@@ -12,10 +12,10 @@ const turnSpeed = 360; //turn speed in degrees per second
 const shipThrust = 5; //acceleration of the ship in pixels per second per second
 const showBounding = false; //show or hide collision bounding 
 const shipExplodeDur = 0.3; //durration of ships explosion
-const shipInvDur = 6; //duration of the ships invisibility in seconds
+const shipInvDur = 6.0; //duration of the ships invisibility in seconds
 const shipBlinkDur = 0.2; //duration of the ships blink during invisibility in seconds
 const laserDist = 0.6; //max distance laser can travel as fraction of screen width
-const laserExplodeDur = 0.1; //duraiton of the lasers explosion in seconds
+const laserExplodeDur = 0.1; //duration of the lasers explosion in seconds
 
 /** @type {HTMLCanvasElement} */
 var canv = document.getElementById("gameCanvas");
@@ -220,7 +220,6 @@ function update() {
     }
 
     //   draw the asteroids
-   
     var x, y, r, a, vert, offs;
     for (var i = 0; i < roids.length; i++) {
         ctx.strokeStyle = "slategrey";
