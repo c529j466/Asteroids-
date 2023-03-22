@@ -19,6 +19,10 @@ const laserExplodeDur = 0.1; //duration of the lasers explosion in seconds
 const textFadeTime = 2.5; //text fade time in seconds
 const textSize = 60; //text font height in pixels
 const gameLives= 3; //starting number of lives
+const roidPtsLge = 20; // points scored for large asteroids
+const roidPtsMed = 50; // points scored for medium asteroids
+const roidPtsSmall = 100; // points scored for small asteroids
+const saveKeyScore = "highscore"; //save key for local storage of high score
 
 
 /** @type {HTMLCanvasElement} */
@@ -26,7 +30,7 @@ var canv = document.getElementById("gameCanvas");
 var ctx = canv.getContext("2d");
 
 //set up the game parameters
-var level, lives, roids, ship, text, textAlpha;
+var level, lives, roids, score, scoreHigh, ship, text, textAlpha;
 newGame();
 
 // set up event handlers
@@ -57,10 +61,21 @@ function destroyAsteroid(index) {
     if (r == Math.ceil(roidSize / 2)) {
         roids.push(newAsteroid(x, y, Math.ceil(roidSize / 4)));
         roids.push(newAsteroid(x, y, Math.ceil(roidSize / 4)));
+        score += roidPtsLge;
     }
     else if (r == Math.ceil(roidSize /4)) {
         roids.push(newAsteroid(x, y, Math.ceil(roidSize / 8)));
         roids.push(newAsteroid(x, y, Math.ceil(roidSize / 8)));
+        score += roidPtsMed;
+    }
+    else {
+        score += roidPtsSmall;
+    }
+
+    //check high score
+    if (score > scoreHigh) {
+        scoreHigh = score;
+        localStorage.setItem(saveKeyScore, scoreHigh);
     }
 
     //destory the asteroid
@@ -179,7 +194,18 @@ function newAsteroid(x, y, r) {
 function newGame() {
     level = 0;
     lives = gameLives;
+    score = 0;
     ship = newShip();
+
+    //get high score from local storage
+    var scoreStr = scoreHigh = localStorage.getItem(saveKeyScore);
+    if (scoreStr == null) {
+        scoreHigh = 0;
+    }
+    else {
+        scoreHigh = parseInt(scoreStr);
+    }
+
     newLevel();
 
 }
@@ -412,6 +438,21 @@ function update() {
         lifeColor = exploding && i == lives - 1 ? "red" : "white";
         drawShip(shipSize + i * shipSize * 1.2, shipSize, 0.5 * Math.PI, lifeColor);
     }
+
+    //draw the score
+    ctx.textAlign = "right";
+    ctx.textBaseline = "middle";
+    ctx.fillStyle = "white"; 
+    ctx.font = textSize + "px dejavu sans mono";
+    ctx.fillText(score, canv.width - shipSize / 2, shipSize);
+
+     //draw the high score
+     ctx.textAlign = "center";
+     ctx.textBaseline = "middle";
+     ctx.fillStyle = "white"; 
+     ctx.font = (textSize * 0.75) + "px dejavu sans mono";
+     ctx.fillText("BEST " + scoreHigh, canv.width / 2, shipSize);
+
 
     //detect laser hits on asteroids
     var ax, ay, ar, lx, ly;
